@@ -29,9 +29,17 @@ async def channel_post(client: Client, message: Message):
     link = f"https://telegram.me/{client.username}?start={base64_string}"
     short_link = await get_shortlink(f"https://telegram.me/{client.username}?start={base64_string}")
 
+    #Asuran
+    # get media type
+    media = message.document or message.video or message.audio or message.photo
+    # get file name
+    file_name = media.file_name if media.file_name else ""
+    # get caption (if any)
+    caption = message.caption if media.file_name else ""
+    
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
-    await reply_text.edit(f"<b>Link</b>: {short_link}", reply_markup=reply_markup, disable_web_page_preview = True)
+    await reply_text.edit(f"<b>🛑 {file_name}\n\nLink: {short_link}</b>", reply_markup=reply_markup, disable_web_page_preview = True)
 
     if not DISABLE_CHANNEL_BUTTON:
         await post_message.edit_reply_markup(reply_markup)
