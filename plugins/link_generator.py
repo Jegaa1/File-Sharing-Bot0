@@ -39,7 +39,7 @@ async def batch(client: Client, message: Message):
     link = f"https://t.me/{client.username}?start={base64_string}"
     short_link = await get_shortlink(f"https://telegram.me/{client.username}?start={base64_string}")
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-    await second_message.reply_text(f"<b>🛑 {file_name}\n\nLink: {short_link}</b>", quote=True, reply_markup=reply_markup)
+    await second_message.reply_text(f"<b>{file_name}\n\nLink: {short_link}</b>", quote=True, reply_markup=reply_markup)
 
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
@@ -60,4 +60,4 @@ async def link_generator(client: Client, message: Message):
     link = f"https://telegram.me/{client.username}?start={base64_string}"
     short_link = await get_shortlink(f"https://telegram.me/{client.username}?start={base64_string}")
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-    await channel_message.reply_text(f"<b>🛑 {file_name}\n\nLink: {short_link}</b>", quote=True, reply_markup=reply_markup)
+    await channel_message.reply_text(f"<b>{file_name}\n\nLink: {short_link}</b>", quote=True, reply_markup=reply_markup)
