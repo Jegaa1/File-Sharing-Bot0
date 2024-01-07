@@ -51,8 +51,8 @@ async def channel_post(client: Client, message: Message):
     converted_id = post_message.id * abs(client.db_channel.id)
     string = f"get-{converted_id}"
     base64_string = await encode(string)
-    link = f"https://telegram.me/{client.username}?start={base64_string}"
-    short_link = await get_shortlink(f"https://telegram.me/{client.username}?start={base64_string}")
+    link = f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}"
+    short_link = await get_shortlink(f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}")
 
     #Asuran
     # get media type
