@@ -56,8 +56,8 @@ CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
 
 #shortlink
-SITE = os.environ.get("SITE", "tnshort.net")
-API = os.environ.get("API", "003db0d0a2e56943b93dc0abd80e1260a17166c8")
+SITE = os.environ.get("SITE", "seturl.in")
+API = os.environ.get("API", "9c0b43277912de58214a0b6880b102c53e048348")
 
 #Set true if you want Disable your Channel Posts Share button
 if os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True':
