@@ -11,3 +11,4 @@ python-dotenv
 # --- For-Shortlink -------#
 shortzy
 requests
+flask
