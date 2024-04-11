@@ -52,7 +52,7 @@ async def channel_post(client: Client, message: Message):
     string = f"get-{converted_id}"
     base64_string = await encode(string)
     link = f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}"
-    short_link = await get_shortlink(f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}")
+    #short_link = await get_shortlink(f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}")
 
     #Asuran
     # get media type
