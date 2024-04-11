@@ -39,7 +39,7 @@ async def batch(client: Client, message: Message):
     link = f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}"
     short_link = await get_shortlink(f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}")
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-    await second_message.reply_text(f"<b>8 into 1: {short_link}</b>", quote=True, reply_markup=reply_markup)
+    await second_message.reply_text(f"<b>8 into 1: {link}</b>", quote=True, reply_markup=reply_markup)
 
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
