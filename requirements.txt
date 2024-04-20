@@ -4,9 +4,15 @@ TgCrypto
 Pyromod==1.5
 # --- For-Database ------------ #
 pymongo
+motor
+umongo
 dnspython
+marshmallow
 # --- For-Web-Response ------- #
-aiohttp
-# --- For-Shortlink -------#
-shortzy
+pytz
 requests
+bs4
+shortzy
+aiohttp
+aiofiles
+asyncio
