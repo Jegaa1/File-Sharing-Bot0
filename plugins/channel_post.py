@@ -9,8 +9,6 @@ from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
 
-from short import get_shortlink
-
 def humanbytes(size):
     # https://stackoverflow.com/a/49361727/4723940
     # 2**10 = 1024
