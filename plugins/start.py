@@ -38,10 +38,10 @@ SECONDS = int(os.getenv("SECONDS", "10"))
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    owner_id = ADMINS  # Fetch the owner's ID from config
+    OWNER_ID = ADMINS  # Fetch the owner's ID from config
 
     # Check if the user is the owner
-    if id == owner_id:
+    if id == OWNER_ID:
         # Owner-specific actions
         # You can add any additional actions specific to the owner here
         await message.reply("ʏᴏᴜ ᴀʀᴇ ᴛʜᴇ ᴏᴡɴᴇʀ! ᴀᴅᴅɪᴛɪᴏɴᴀʟ ᴀᴄᴛɪᴏɴs ᴄᴀɴ ʙᴇ ᴀᴅᴅᴇᴅ ʜᴇʀᴇ.")
@@ -64,7 +64,7 @@ async def start_command(client: Client, message: Message):
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             if verify_status["link"] == "":
                 reply_markup = None
-            await message.reply(f"ʏᴏᴜʀ ᴛᴏᴋᴇɴ sᴜᴄᴄᴇssғᴜʟʟʏ ᴠᴇʀɪғɪᴇᴅ ᴀɴᴅ ᴠᴀʟɪᴅ ғᴏʀ: 𝟸𝟺 ʜᴏᴜʀ", reply_markup=reply_markup, protect_content=False, quote=True)
+            await message.reply(f"ʏᴏᴜʀ ᴛᴏᴋᴇɴ sᴜᴄᴄᴇssғᴜʟʟʏ ᴠᴇʀɪғɪᴇᴅ ᴀɴᴅ ᴠᴀʟɪᴅ ғᴏʀ: 12 ʜᴏᴜʀ", reply_markup=reply_markup, protect_content=False, quote=True)
 
         elif len(message.text) > 7 and verify_status['is_verified']:
             try:
@@ -126,7 +126,7 @@ async def start_command(client: Client, message: Message):
                 except:
                     pass
 
-            SD = await message.reply_text("Baka! Files will be deleted After 600 seconds. Save them to the Saved Message now!")
+            SD = await message.reply_text("Friends! Files will be deleted After 600 seconds. Save them to the Saved Message now!")
             await asyncio.sleep(SECONDS)
 
             for snt_msg in snt_msgs:
