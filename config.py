@@ -36,7 +36,7 @@ DB_NAME = os.environ.get("DATABASE_NAME", "asuranj")
 #Shortner (token system) 
 
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "publicearn.com")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "73a4c60a64ca6c75279d14238fd85cc9e779c2ad")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 43200)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID","https://t.me/demoshort/45")
