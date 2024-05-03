@@ -7,7 +7,7 @@ import re
 import string
 import time
 
-from pyrogram import Client, filters, __version__
+from pyrogram import Client, filters, __version__, emoji
 from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
@@ -35,18 +35,42 @@ from shortzy import Shortzy
 1min=60, 2min=60×2=120, 5min=60×5=300"""
 SECONDS = int(os.getenv("SECONDS", "600"))
 
+
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
     OWNER_ID = ADMINS  # Fetch the owner's ID from config
 
-    # Check if the user is the owner
-    if id == OWNER_ID:
-        # Owner-specific actions
-        # You can add any additional actions specific to the owner here
-        await message.reply("ʏᴏᴜ ᴀʀᴇ ᴛʜᴇ ᴏᴡɴᴇʀ! ᴀᴅᴅɪᴛɪᴏɴᴀʟ ᴀᴄᴛɪᴏɴs ᴄᴀɴ ʙᴇ ᴀᴅᴅᴇᴅ ʜᴇʀᴇ.")
+    # Check if the user is the owner or an admin
+    if id == ADMINS:
+        # Skip verification for owner and admins
+        # You can add any additional actions specific to the owner or admins here
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton('〆 மெயின் சேனல் 〆', url=f'https://t.me/+enbcoW7Zebk2NmY9')
+                ],
+                [
+                    InlineKeyboardButton('🍃 விஜய் டிவி​ 🍃', url=f'https://t.me/+CJghbYKDPtM0MmJl'),
+                    InlineKeyboardButton('🔆 சன் டிவி 🔆', url=f'https://t.me/+56ze8w46Xj4zYjNl')
+                ],
+                [
+                    InlineKeyboardButton('🎭 ஜி தமிழ் 🎭', url=f'https://t.me/+VdExpPLNSLVlMTdl'),
+                    InlineKeyboardButton('♻️ CWC Tamil ♻️', url=f'https://t.me/+EPYGIZ6a035jYjBl')
+                ]
+            ]
+        )
+
+        await message.reply(
+            "Welcome, owner/admin! You have special privileges.",
+            reply_markup=reply_markup
+        )
+    
 
     else:
+        # Rest of the code for non-owner and non-admin users
+        # Including the verification process
+        # ...
         if not await present_user(id):
             try:
                 await add_user(id)
@@ -126,8 +150,10 @@ async def start_command(client: Client, message: Message):
                 except:
                     pass
 
-            SD = await message.reply_text("Friends! Files will be deleted After 600 seconds. Save them to the Saved Message now!")
+            SD = await message.reply_text("Friends! Files will be deleted After 10min. Save them to the Saved Message now!")
             await asyncio.sleep(SECONDS)
+            
+
 
             for snt_msg in snt_msgs:
                 try:
@@ -135,12 +161,25 @@ async def start_command(client: Client, message: Message):
                     await SD.delete()
                 except:
                     pass
+            await react_msg(client, message)
+            return
 
 
         elif verify_status['is_verified']:
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("• ᴀʙᴏᴜᴛ ᴍᴇ", callback_data="about"),
-                  InlineKeyboardButton("ᴄʟᴏsᴇ •", callback_data="close")]]
+              [
+                [
+                InlineKeyboardButton('〆 மெயின் சேனல் 〆', url=f'https://t.me/+enbcoW7Zebk2NmY9')
+                ],
+                [
+                InlineKeyboardButton('🍃 விஜய் டிவி​ 🍃', url=f'https://t.me/+CJghbYKDPtM0MmJl'),
+                InlineKeyboardButton('🔆 சன் டிவி 🔆', url=f'https://t.me/+56ze8w46Xj4zYjNl')
+                ],
+                [
+                InlineKeyboardButton('🎭 ஜி தமிழ் 🎭', url=f'https://t.me/+VdExpPLNSLVlMTdl'),
+                InlineKeyboardButton('♻️ CWC Tamil ♻️', url=f'https://t.me/+EPYGIZ6a035jYjBl')
+                ]
+              ]
             )
             await message.reply_text(
                 text=START_MSG.format(
@@ -154,6 +193,9 @@ async def start_command(client: Client, message: Message):
                 disable_web_page_preview=True,
                 quote=True
             )
+            await react_msg(client, message)
+            return
+
 
         else:
             verify_status = await get_verify_status(id)
@@ -168,8 +210,7 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton('𝐇𝐨𝐰 𝐓𝐨 𝐨𝐩𝐞𝐧 𝐭𝐡𝐢𝐬 𝐥𝐢𝐧𝐤', url=TUT_VID)]
                 ]
                 await message.reply(f"𝐘𝐨𝐮𝐫 𝐀𝐝𝐬 𝐭𝐨𝐤𝐞𝐧 𝐢𝐬 𝐞𝐱𝐩𝐢𝐫𝐞𝐝, 𝐫𝐞𝐟𝐫𝐞𝐬𝐡 𝐲𝐨𝐮𝐫 𝐭𝐨𝐤𝐞𝐧 𝐚𝐧𝐝 𝐭𝐫𝐲 𝐚𝐠𝐚𝐢𝐧. \n\n𝐓𝐨𝐤𝐞𝐧 𝐓𝐢𝐦𝐞𝐨𝐮𝐭: {get_exp_time(VERIFY_EXPIRE)}\n\n𝐖𝐡𝐚𝐭 𝐢𝐬 𝐭𝐡𝐞 𝐭𝐨𝐤𝐞𝐧?\n\n𝐓𝐡𝐢𝐬 𝐢𝐬 𝐚𝐧 𝐚𝐝𝐬 𝐭𝐨𝐤𝐞𝐧. 𝐈𝐟 𝐲𝐨𝐮 𝐩𝐚𝐬𝐬 𝟏 𝐚𝐝, 𝐲𝐨𝐮 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐭𝐡𝐞 𝐛𝐨𝐭 𝐟𝐨𝐫 12 𝐇𝐨𝐮𝐫 𝐚𝐟𝐭𝐞𝐫 𝐩𝐚𝐬𝐬𝐢𝐧𝐠 𝐭𝐡𝐞 𝐚𝐝.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
-
-
+                
 
     
         
@@ -216,13 +257,17 @@ async def not_joined(client: Client, message: Message):
         quote = True,
         disable_web_page_preview = True
     )
+    await react_msg(client, message)
+    return
 
+    
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
     users = await full_userbase()
     await msg.edit(f"{len(users)} users are using this bot")
 
+    
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
@@ -256,6 +301,7 @@ async def send_text(client: Bot, message: Message):
         
         status = f"""<b><u>Broadcast Completed</u>
 
+    
 Total Users: <code>{total}</code>
 Successful: <code>{successful}</code>
 Blocked Users: <code>{blocked}</code>
@@ -268,3 +314,229 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
+
+@Bot.on_message(filters.all)
+async def react_msg(client,message):
+    emojis = [
+        "👍",
+        "👎",
+        "❤️",
+        "🔥",
+        "🥰",
+        "👏",
+        "😁",
+        "🤔",
+        "😱",
+        "🎉",
+        "🤩",
+        "🙏",
+        "👌",
+        "🕊",
+        "🤡",
+        "🥱",
+        "😍",
+        "🐳",
+        "❤‍🔥",
+        "🌚",
+        "🌭",
+        "💯",
+        "🤣",
+        "⚡️",
+        "🏆",
+        "💔",
+        "🤨",
+        "😐",
+        "🍓",
+        "🍾",
+        "💋",
+        "😈",
+        "😴",
+        "🤓",
+        "👻",
+        "👨‍💻",
+        "👀",
+        "🙈",
+        "😇",
+        "🤝",
+        "✍️",
+        "🤗",
+        "🫡",
+        "🎅",
+        "🎄",
+        "☃️",
+        "💅",
+        "🤪",
+        "🗿",
+        "🆒",
+        "💘",
+        "🙉",
+        "🦄",
+        "😘",
+        "💊",
+        "🙊",
+        "😎",
+                "😀",
+        "😃",
+        "😄",
+        "😁",
+        "😆",
+        "😅",
+        "😂",
+        "🤣",
+        "🥲",
+        "🥹",
+        "☺️",
+        "😊",
+        "😇",
+        "🙂",
+        "🙃",
+        "😉",
+        "😌",
+        "😍",
+        "🥰",
+        "😘",
+        "😗",
+        "😙",
+        "😚",
+        "😋",
+        "😛",
+        "😝",
+        "😜",
+        "🤪",
+        "🤨",
+        "🧐",
+        "🤓",
+        "😎",
+        "🥸",
+        "🤩",
+        "🥳",
+        "🙂‍↕️",
+        "😏",
+        "😒",
+        "🙂‍↔️",
+        "😞",
+        "😔",
+        "😟",
+        "😕",
+        "🙁",
+        "☹️",
+        "😣",
+        "😖",
+        "😫",
+        "😩",
+        "🥺",
+        "😢",
+        "😭",
+        "😮‍💨",
+        "😤",
+        "😠",
+        "😡",
+        "🤬",
+        "🤯",
+        "😳",
+        "🥵",
+        "🥶",
+        "😱",
+        "😨",
+        "😰",
+        "😥",
+        "😓",
+        "🫣",
+        "🤗",
+        "🫡",
+        "🤔",
+        "🫢",
+        "🤭",
+        "🤫",
+        "🤥",
+        "😶",
+        "😶‍🌫️",
+        "😐",
+        "😑",
+        "😬",
+        "🫨",
+        "🫠",
+        "🙄",
+        "😯",
+        "😦",
+        "😧",
+        "😮",
+        "😲",
+        "🥱",
+        "😴",
+        "🤤",
+        "😪",
+        "😵",
+        "😵‍💫",
+        "🫥",
+        "🤐",
+        "🥴",
+        "🤢",
+        "🤧",
+        "😷",
+        "🤒",
+        "🤕",
+        "🤑",
+        "🤠",
+        "😈",
+        "👿",
+        "👹",
+        "👺",
+        "🤡",
+        "💩",
+        "👻",
+        "💀",
+        "☠️",
+        "👽",
+        "👾",
+        "🤖",
+        "🎃",
+        "😺",
+        "😸",
+        "😹",
+        "😻",
+        "😼",
+        "😽",
+        "🙀",
+        "😿",
+        "😾",
+        "🧌",
+        "💘",
+        "💖",
+        "💝",
+        "𓀀",
+        "𓀁",
+        "𓀂",
+        "𓀃",
+        "𓀄",
+        "𓀅",
+        "𓀆",
+        "𓀇",
+        "𓀈",
+        "𓀉",
+        "𓀊",
+        "𓀋",
+        "𓀌",
+        "𓀍",
+        "𓀎",
+        "𓀏",
+        "𓀐",
+        "𓀑",
+        "𓀒",
+        "𓀓",
+        "𓀔",
+        "𓀕",
+        "𓀖",
+        "𓀗",
+        "𓀘",
+        "𓀙",
+        "𓀚",
+        "𓀛",
+        "𓀜",
+        "𓀝",
+    ]
+    rnd_emoji = random.choice(emojis)
+    await client.send_reaction(
+        chat_id=message.chat.id, message_id=message.id, emoji=rnd_emoji, big=True
+    )
+    return
