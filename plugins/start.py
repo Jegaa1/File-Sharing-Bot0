@@ -36,6 +36,7 @@ SECONDS = int(os.getenv("SECONDS", "600"))
 WAIT_MSG = """<b>Processing ...</b>"""
 
 REPLY_ERROR = """<code>Use this command as a reply to any telegram message with out any spaces.</code>"""
+ADMINS = "880087645"
 
 def get_time_until_midnight():
     now = datetime.now()
