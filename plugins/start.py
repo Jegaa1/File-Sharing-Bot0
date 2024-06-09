@@ -33,6 +33,8 @@ from shortzy import Shortzy
 
 SECONDS = int(os.getenv("SECONDS", "600"))
 
+WAIT_MSG = """<b>Processing ...</b>"""
+
 def get_time_until_midnight():
     now = datetime.now()
     next_midnight = datetime.combine(now + timedelta(days=1), datetime.min.time())
