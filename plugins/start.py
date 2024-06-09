@@ -6,6 +6,7 @@ import random
 import re
 import string
 import time
+from datetime import datetime, timedelta
 
 from pyrogram import Client, filters, __version__, emoji
 from pyrogram.enums import ParseMode
@@ -19,7 +20,6 @@ from config import (
     START_MSG,
     CUSTOM_CAPTION,
     IS_VERIFY,
-    VERIFY_EXPIRE,
     SHORTLINK_API,
     SHORTLINK_URL,
     DISABLE_CHANNEL_BUTTON,
@@ -31,20 +31,19 @@ from helper_func import subscribed, encode, decode, get_messages, get_shortlink,
 from database.database import add_user, del_user, full_userbase, present_user
 from shortzy import Shortzy
 
-"""add time im seconds for waitingwaiting before delete 
-1min=60, 2min=60×2=120, 5min=60×5=300"""
 SECONDS = int(os.getenv("SECONDS", "600"))
 
+def get_time_until_midnight():
+    now = datetime.now()
+    next_midnight = datetime.combine(now + timedelta(days=1), datetime.min.time())
+    return (next_midnight - now).total_seconds()
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    owner_id = ADMINS  # Fetch the owner's ID from config
+    owner_id = ADMINS
 
-    # Check if the user is the owner or an admin
     if id == ADMINS:
-        # Skip verification for owner and admins
-        # You can add any additional actions specific to the owner or admins here
         reply_markup = InlineKeyboardMarkup(
             [
                 [
@@ -65,12 +64,8 @@ async def start_command(client: Client, message: Message):
             "Welcome, owner/admin! You have special privileges.",
             reply_markup=reply_markup
         )
-    
 
     else:
-        # Rest of the code for non-owner and non-admin users
-        # Including the verification process
-        # ...
         if not await present_user(id):
             try:
                 await add_user(id)
@@ -78,17 +73,17 @@ async def start_command(client: Client, message: Message):
                 pass
 
         verify_status = await get_verify_status(id)
-        if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
+        if verify_status['is_verified'] and (time.time() - verify_status['verified_time']) > get_time_until_midnight():
             await update_verify_status(id, is_verified=False)
 
         if "verify_" in message.text:
             _, token = message.text.split("_", 1)
             if verify_status['verify_token'] != token:
-                return await message.reply("ʏᴏᴜʀ ᴛᴏᴋᴇɴ ɪs ɪɴᴠᴀʟɪᴅ ᴏʀ ᴇxᴘɪʀᴇᴅ. ᴛʀʏ ᴀɢᴀɪɴ ʙʏ ᴄʟɪᴄᴋɪɴɢ /start")
+                return await message.reply("Your token is invalid or expired. Try again by clicking /start")
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             if verify_status["link"] == "":
                 reply_markup = None
-            await message.reply(f"ʏᴏᴜʀ ᴛᴏᴋᴇɴ sᴜᴄᴄᴇssғᴜʟʟʏ ᴠᴇʀɪғɪᴇᴅ ᴀɴᴅ ᴠᴀʟɪᴅ ғᴏʀ: 12 ʜᴏᴜʀ", reply_markup=reply_markup, protect_content=False, quote=True)
+            await message.reply(f"Your token successfully verified and valid until 12 AM", reply_markup=reply_markup, protect_content=False, quote=True)
 
         elif len(message.text) > 7 and verify_status['is_verified']:
             try:
@@ -152,8 +147,6 @@ async def start_command(client: Client, message: Message):
 
             SD = await message.reply_text("Friends! Files will be deleted After 10min. Save them to the Saved Message now!")
             await asyncio.sleep(SECONDS)
-            
-
 
             for snt_msg in snt_msgs:
                 try:
@@ -164,22 +157,21 @@ async def start_command(client: Client, message: Message):
             await react_msg(client, message)
             return
 
-
         elif verify_status['is_verified']:
             reply_markup = InlineKeyboardMarkup(
-              [
                 [
-                InlineKeyboardButton('〆 மெயின் சேனல் 〆', url=f'https://t.me/+enbcoW7Zebk2NmY9')
-                ],
-                [
-                InlineKeyboardButton('🍃 விஜய் டிவி​ 🍃', url=f'https://t.me/+CJghbYKDPtM0MmJl'),
-                InlineKeyboardButton('🔆 சன் டிவி 🔆', url=f'https://t.me/+56ze8w46Xj4zYjNl')
-                ],
-                [
-                InlineKeyboardButton('🎭 ஜி தமிழ் 🎭', url=f'https://t.me/+VdExpPLNSLVlMTdl'),
-                InlineKeyboardButton('♻️ CWC Tamil ♻️', url=f'https://t.me/+EPYGIZ6a035jYjBl')
+                    [
+                        InlineKeyboardButton('〆 மெயின் சேனல் 〆', url=f'https://t.me/+enbcoW7Zebk2NmY9')
+                    ],
+                    [
+                        InlineKeyboardButton('🍃 விஜய் டிவி​ 🍃', url=f'https://t.me/+CJghbYKDPtM0MmJl'),
+                        InlineKeyboardButton('🔆 சன் டிவி 🔆', url=f'https://t.me/+56ze8w46Xj4zYjNl')
+                    ],
+                    [
+                        InlineKeyboardButton('🎭 ஜி தமிழ் 🎭', url=f'https://t.me/+VdExpPLNSLVlMTdl'),
+                        InlineKeyboardButton('♻️ CWC Tamil ♻️', url=f'https://t.me/+EPYGIZ6a035jYjBl')
+                    ]
                 ]
-              ]
             )
             await message.reply_text(
                 text=START_MSG.format(
@@ -196,7 +188,6 @@ async def start_command(client: Client, message: Message):
             await react_msg(client, message)
             return
 
-
         else:
             verify_status = await get_verify_status(id)
             if IS_VERIFY and not verify_status['is_verified']:
@@ -204,41 +195,28 @@ async def start_command(client: Client, message: Message):
                 TUT_VID = f"https://telegram.me/demoshort/45"
                 token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 await update_verify_status(id, verify_token=token, link="")
-                link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
+                link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://telegram.dog/{client.username}?start=verify_{token}')
                 btn = [
-                    [InlineKeyboardButton("𝐂𝐥𝐢𝐜𝐤 𝐇𝐞𝐫𝐞", url=link)],
-                    [InlineKeyboardButton('𝐇𝐨𝐰 𝐓𝐨 𝐨𝐩𝐞𝐧 𝐭𝐡𝐢𝐬 𝐥𝐢𝐧𝐤', url=TUT_VID)]
+                    [InlineKeyboardButton("Click Here", url=link)],
+                    [InlineKeyboardButton('How To Open This Link', url=TUT_VID)]
                 ]
-                await message.reply(f"𝐘𝐨𝐮𝐫 𝐀𝐝𝐬 𝐭𝐨𝐤𝐞𝐧 𝐢𝐬 𝐞𝐱𝐩𝐢𝐫𝐞𝐝, 𝐫𝐞𝐟𝐫𝐞𝐬𝐡 𝐲𝐨𝐮𝐫 𝐭𝐨𝐤𝐞𝐧 𝐚𝐧𝐝 𝐭𝐫𝐲 𝐚𝐠𝐚𝐢𝐧. \n\n𝐓𝐨𝐤𝐞𝐧 𝐓𝐢𝐦𝐞𝐨𝐮𝐭: {get_exp_time(VERIFY_EXPIRE)}\n\n𝐖𝐡𝐚𝐭 𝐢𝐬 𝐭𝐡𝐞 𝐭𝐨𝐤𝐞𝐧?\n\n𝐓𝐡𝐢𝐬 𝐢𝐬 𝐚𝐧 𝐚𝐝𝐬 𝐭𝐨𝐤𝐞𝐧. 𝐈𝐟 𝐲𝐨𝐮 𝐩𝐚𝐬𝐬 𝟏 𝐚𝐝, 𝐲𝐨𝐮 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐭𝐡𝐞 𝐛𝐨𝐭 𝐟𝐨𝐫 12 𝐇𝐨𝐮𝐫 𝐚𝐟𝐭𝐞𝐫 𝐩𝐚𝐬𝐬𝐢𝐧𝐠 𝐭𝐡𝐞 𝐚𝐝.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
-                
+                await message.reply(f"Your Ads token is expired, refresh your token and try again. \n\nToken Timeout: {get_exp_time(get_time_until_midnight())}\n\nWhat is the token?\n\nThis is an ads token. If you pass 1 ad, you can use the bot until 12 AM.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
 
-    
-        
-#=====================================================================================##
-
-WAIT_MSG = """"<b>Processing ...</b>"""
-
-REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
-
-#=====================================================================================##
-
-    
-    
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
     buttons = [
         [
             InlineKeyboardButton(
-                "• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •",
-                url = client.invitelink)
+                "Join Channel",
+                url=client.invitelink)
         ]
     ]
     try:
         buttons.append(
             [
                 InlineKeyboardButton(
-                    text = '• ɴᴏᴡ ᴄʟɪᴄᴋ ʜᴇʀᴇ •',
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
+                    text='Now Click Here',
+                    url=f"https://t.me/{client.username}?start={message.command[1]}"
                 )
             ]
         )
@@ -246,19 +224,23 @@ async def not_joined(client: Client, message: Message):
         pass
 
     await message.reply(
-        text = FORCE_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
-            ),
-        reply_markup = InlineKeyboardMarkup(buttons),
-        quote = True,
-        disable_web_page_preview = True
+        text=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name,
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id
+        ),
+        reply_markup=InlineKeyboardMarkup(buttons),
+        disable_web_page_preview=True,
+        quote=True
     )
-    await react_msg(client, message)
-    return
+
+# The remaining function definitions for `react_msg` and other dependencies should be included here.
+
+#if __name__ == "__main__":
+   # app = Bot()
+   # app.run()
 
     
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
