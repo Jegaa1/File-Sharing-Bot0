@@ -39,7 +39,7 @@ SECONDS = int(os.getenv("SECONDS", "600"))
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    OWNER_ID = ADMINS  # Fetch the owner's ID from config
+    owner_id = ADMINS  # Fetch the owner's ID from config
 
     # Check if the user is the owner or an admin
     if id == ADMINS:
