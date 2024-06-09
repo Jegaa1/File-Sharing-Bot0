@@ -238,9 +238,9 @@ async def not_joined(client: Client, message: Message):
 
 # The remaining function definitions for `react_msg` and other dependencies should be included here.
 
-#if __name__ == "__main__":
-   # app = Bot()
-   # app.run()
+if __name__ == "__main__":
+    app = Bot()
+    app.run()
 
     
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
