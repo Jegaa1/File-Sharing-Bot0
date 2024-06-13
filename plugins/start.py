@@ -314,17 +314,3 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
-
-@Bot.on_message(filters.all)
-async def react_msg(client,message):
-    emojis = [
-        "👍",
-        "👎",
-        "❤️",
-        "🔥",
-    ]
-    rnd_emoji = random.choice(emojis)
-    await client.send_reaction(
-        chat_id=message.chat.id, message_id=message.id, emoji=rnd_emoji, big=True
-    )
-    return
