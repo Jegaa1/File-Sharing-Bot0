@@ -91,17 +91,17 @@ async def start_command(client: Client, message: Message):
                 pass
 
         verify_status = await get_verify_status(id)
-        if verify_status['is_verified'] and (time.time() - verify_status['verified_time']) > get_time_until_midnight():
+        if verify_status['is_verified'] and VERIFY_EXPIRE < (time.time() - verify_status['verified_time']):
             await update_verify_status(id, is_verified=False)
 
         if "verify_" in message.text:
             _, token = message.text.split("_", 1)
             if verify_status['verify_token'] != token:
-                return await message.reply("Your token is invalid or expired. Try again by clicking /start")
+                return await message.reply("Your token is invalid or Expired. Try again by clicking /start")
             await update_verify_status(id, is_verified=True, verified_time=time.time())
             if verify_status["link"] == "":
                 reply_markup = None
-            await message.reply(f"𝗬𝗼𝘂𝗿 𝘁𝗼𝗸𝗲𝗻 𝘀𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝘃𝗲𝗿𝗶𝗳𝗶𝗲𝗱 𝗮𝗻𝗱 𝘃𝗮𝗹𝗶𝗱 𝘂𝗻𝘁𝗶𝗹 <b>5.30</b> 𝗔𝗠", reply_markup=reply_markup, protect_content=False, quote=True)
+            await message.reply(f"Your token successfully verified and valid for: 24 Hour", reply_markup=reply_markup, protect_content=False, quote=True)
 
         elif len(message.text) > 7 and verify_status['is_verified']:
             try:
@@ -131,7 +131,7 @@ async def start_command(client: Client, message: Message):
                     ids = [int(int(argument[1]) / abs(client.db_channel.id))]
                 except:
                     return
-            temp_msg = await message.reply("Wait A Second...")
+            temp_msg = await message.reply("Please wait...")
             try:
                 messages = await get_messages(client, ids)
             except:
@@ -218,7 +218,7 @@ async def start_command(client: Client, message: Message):
                     [InlineKeyboardButton("𝐂𝐥𝐢𝐜𝐤 𝐇𝐞𝐫𝐞", url=link)],
                     [InlineKeyboardButton('𝐇𝐨𝐰 𝐓𝐨 𝐨𝐩𝐞𝐧 𝐭𝐡𝐢𝐬 𝐥𝐢𝐧𝐤', url=TUT_VID)]
                 ]
-                await message.reply(f"𝐘𝐨𝐮𝐫 𝐀𝐝𝐬 𝐭𝐨𝐤𝐞𝐧 𝐢𝐬 𝐞𝐱𝐩𝐢𝐫𝐞𝐝, 𝐫𝐞𝐟𝐫𝐞𝐬𝐡 𝐲𝐨𝐮𝐫 𝐭𝐨𝐤𝐞𝐧 𝐚𝐧𝐝 𝐭𝐫𝐲 𝐚𝐠𝐚𝐢𝐧. \n\n𝐓𝐨𝐤𝐞𝐧 𝐓𝐢𝐦𝐞𝐨𝐮𝐭: <b>{get_exp_time(get_time_until_midnight())}</b>\n\n𝗪𝗵𝗮𝘁 𝗶𝘀 𝘁𝗵𝗲 𝘁𝗼𝗸𝗲𝗻?\n\n𝗧𝗵𝗶𝘀 𝗶𝘀 𝗮𝗻 𝗮𝗱𝘀 𝘁𝗼𝗸𝗲𝗻. 𝗜𝗳 𝘆𝗼𝘂 𝗽𝗮𝘀𝘀 𝟭 𝗮𝗱, 𝘆𝗼𝘂 𝗰𝗮𝗻 𝘂𝘀𝗲 𝘁𝗵𝗲 𝗯𝗼𝘁 𝘂𝗻𝘁𝗶𝗹 5.30 𝗔𝗠.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
+                await message.reply(f"𝐘𝐨𝐮𝐫 𝐀𝐝𝐬 𝐭𝐨𝐤𝐞𝐧 𝐢𝐬 𝐞𝐱𝐩𝐢𝐫𝐞𝐝, 𝐫𝐞𝐟𝐫𝐞𝐬𝐡 𝐲𝐨𝐮𝐫 𝐭𝐨𝐤𝐞𝐧 𝐚𝐧𝐝 𝐭𝐫𝐲 𝐚𝐠𝐚𝐢𝐧. \n\n𝐓𝐨𝐤𝐞𝐧 𝐓𝐢𝐦𝐞𝐨𝐮𝐭: {get_exp_time(VERIFY_EXPIRE)}\n\n𝐖𝐡𝐚𝐭 𝐢𝐬 𝐭𝐡𝐞 𝐭𝐨𝐤𝐞𝐧?\n\n𝐓𝐡𝐢𝐬 𝐢𝐬 𝐚𝐧 𝐚𝐝𝐬 𝐭𝐨𝐤𝐞𝐧. 𝐈𝐟 𝐲𝐨𝐮 𝐩𝐚𝐬𝐬 𝟏 𝐚𝐝, 𝐲𝐨𝐮 𝐜𝐚𝐧 𝐮𝐬𝐞 𝐭𝐡𝐞 𝐛𝐨𝐭 𝐟𝐨𝐫 𝟐𝟒 𝐇𝐨𝐮𝐫 𝐚𝐟𝐭𝐞𝐫 𝐩𝐚𝐬𝐬𝐢𝐧𝐠 𝐭𝐡𝐞 𝐚𝐝.", reply_markup=InlineKeyboardMarkup(btn), protect_content=False, quote=True)
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
