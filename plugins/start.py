@@ -62,7 +62,13 @@ async def start_command(client: Client, message: Message):
     id = message.from_user.id
     owner_id = ADMINS
 
-    if id == owner_id:
+    # Extract token if it exists
+    token = None
+    if len(message.command) > 1:
+        token = message.command[1]
+
+    # Check if the user is an admin
+    if id in owner_id:
         reply_markup = InlineKeyboardMarkup(
             [
                 [
