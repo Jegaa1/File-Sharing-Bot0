@@ -1,4 +1,3 @@
-import re
 import asyncio
 from pyrogram import filters, Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
@@ -9,6 +8,7 @@ from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
 
 def humanbytes(size):
+    # Convert file size to a human-readable format
     if not size:
         return ""
     power = 2**10
@@ -20,6 +20,7 @@ def humanbytes(size):
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
 def TimeFormatter(milliseconds: int) -> str:
+    # Convert milliseconds to a human-readable format
     seconds, milliseconds = divmod(int(milliseconds), 1000)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
@@ -30,15 +31,6 @@ def TimeFormatter(milliseconds: int) -> str:
         ((str(seconds) + " sec, ") if seconds else "") + \
         ((str(milliseconds) + " millisec, ") if milliseconds else "")
     return tmp[:-2]
-
-def extract_serial_and_date(filename):
-    pattern = r'^(.*?)_(\d{4}-\d{2}-\d{2})\..*$'
-    match = re.match(pattern, filename)
-    if match:
-        serial_name = match.group(1)
-        date = match.group(2)
-        return serial_name.strip(), date
-    return "", ""
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
@@ -52,6 +44,7 @@ async def channel_post(client: Client, message: Message):
         print(e)
         await reply_text.edit_text("Something went Wrong..!")
         return
+
     converted_id = post_message.id * abs(client.db_channel.id)
     string = f"get-{converted_id}"
     base64_string = await encode(string)
@@ -60,19 +53,16 @@ async def channel_post(client: Client, message: Message):
     media = message.document or message.video or message.audio or message.photo
     if media:
         file_name = media.file_name if media.file_name else ""
-        file_size = humanbytes(media.file_size)
-        duration = TimeFormatter(media.duration * 1000) if media.duration else "N/A"
+        file_size = humanbytes(media.file_size) if media.file_size else "N/A"
+        duration = TimeFormatter(media.duration * 1000) if hasattr(media, 'duration') and media.duration else "N/A"
     else:
         file_name = ""
         file_size = "N/A"
         duration = "N/A"
 
-    serial_name, date = extract_serial_and_date(file_name)
-    caption = f"{serial_name} ({date})" if serial_name and date else ""
-
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
-    await reply_text.edit(f"<b>{caption} ~ [⏰ {duration}] - {file_size}\n\nLink: {link}</b>", reply_markup=reply_markup, disable_web_page_preview=True)
+    await reply_text.edit(f"<b>{file_name} ~ [⏰ {duration}] - {file_size}\n\nLink: {link}</b>", reply_markup=reply_markup, disable_web_page_preview=True)
 
     if not DISABLE_CHANNEL_BUTTON:
         try:
