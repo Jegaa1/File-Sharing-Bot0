@@ -37,8 +37,8 @@ def extract_serial_and_date(filename):
     if match:
         serial_name = match.group(1)
         date = match.group(2)
-        return serial_name, date
-    return filename, ""
+        return serial_name.strip(), date
+    return "", ""
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
@@ -68,11 +68,11 @@ async def channel_post(client: Client, message: Message):
         duration = "N/A"
 
     serial_name, date = extract_serial_and_date(file_name)
-    caption = message.caption if file_name else ""
+    caption = f"{serial_name} ({date})" if serial_name and date else ""
 
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
-    await reply_text.edit(f"<b>{serial_name} ({date}) ~ [⏰ {duration}] - {file_size}\n\nLink: {link}</b>", reply_markup=reply_markup, disable_web_page_preview=True)
+    await reply_text.edit(f"<b>{caption} ~ [⏰ {duration}] - {file_size}\n\nLink: {link}</b>", reply_markup=reply_markup, disable_web_page_preview=True)
 
     if not DISABLE_CHANNEL_BUTTON:
         try:
