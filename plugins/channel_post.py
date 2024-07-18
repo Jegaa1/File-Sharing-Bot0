@@ -22,7 +22,7 @@ def humanbytes(size):
 def TimeFormatter(milliseconds: int) -> str:
     seconds, milliseconds = divmod(int(milliseconds), 1000)
     minutes, seconds = divmod(seconds, 60)
-    hours, minutes = divmod(hours, 60)
+    hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = ((str(days) + " days, ") if days else "") + \
         ((str(hours) + " hrs, ") if hours else "") + \
