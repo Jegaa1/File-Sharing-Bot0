@@ -60,7 +60,7 @@ async def channel_post(client: Client, message: Message):
     media = message.document or message.video or message.audio or message.photo
     file_name = media.file_name if media.file_name else ""
     file_size = humanbytes(media.file_size)
-    duration = TimeFormatter(media.duration * 1000)
+    duration = TimeFormatter(media.duration * 1000) if media.duration else "N/A"
     serial_name, date = extract_serial_and_date(file_name)
     caption = message.caption if media.file_name else ""
 
