@@ -40,7 +40,7 @@ def extract_serial_and_date(filename):
         return serial_name, date
     return filename, ""
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
+@Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start', 'users', 'broadcast', 'batch', 'genlink', 'stats']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote=True)
     try:
@@ -58,11 +58,17 @@ async def channel_post(client: Client, message: Message):
     link = f"https://tamilserialbot.jasurun.workers.dev?start={base64_string}"
 
     media = message.document or message.video or message.audio or message.photo
-    file_name = media.file_name if media.file_name else ""
-    file_size = humanbytes(media.file_size)
-    duration = TimeFormatter(media.duration * 1000) if media.duration else "N/A"
+    if media:
+        file_name = media.file_name if media.file_name else ""
+        file_size = humanbytes(media.file_size)
+        duration = TimeFormatter(media.duration * 1000) if media.duration else "N/A"
+    else:
+        file_name = ""
+        file_size = "N/A"
+        duration = "N/A"
+
     serial_name, date = extract_serial_and_date(file_name)
-    caption = message.caption if media.file_name else ""
+    caption = message.caption if file_name else ""
 
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
