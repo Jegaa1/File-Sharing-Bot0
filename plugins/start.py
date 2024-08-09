@@ -19,7 +19,7 @@ from config import (
     FORCE_MSG,
     START_MSG,
     CUSTOM_CAPTION,
-    IS_VERIFY,
+    USE_SHORTLINK,
     SHORTLINK_API,
     SHORTLINK_URL,
     DISABLE_CHANNEL_BUTTON,
@@ -192,7 +192,7 @@ async def start_command(client: Client, message: Message):
         if id in ADMINS:
             return
         verify_status = await get_verify_status(id)
-        if IS_VERIFY and not verify_status['is_verified']:
+        if not verify_status['is_verified']:
             short_url = f"publicearn.com"
             TUT_VID = f"https://telegram.me/demoshort/50"
             token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
@@ -298,4 +298,3 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
-
